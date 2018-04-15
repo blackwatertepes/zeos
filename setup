@@ -1,0 +1,55 @@
+#!/bin/bash
+
+NODEOS_PATH=~/Library/Application\ Support/eosio/nodeos
+
+printf "Installing Zeos...\n"
+
+if [ ! -d "$NODEOS_PATH" ]; then
+  printf "\nERROR: nodeos not found"
+  printf "\nInstall nodeos to continue"
+  printf "\nGithub Repo: https://github.com/EOSIO/eos"
+  printf "\n"
+  return
+fi
+
+printf "\nNodeos installed!"
+
+cp ./config.yml "$NODEOS_PATH/config/config.ini"
+printf "\nConfig copied."
+
+if [ ! -d ~/.zeos ]; then
+  mkdir ~/.zeos
+fi
+
+printf "\n\nSpecify the PATH to your eos directory"
+printf "\nExample: ~/Github/eos\n"
+# TODO: Prompt the user for the EOS_PATH...
+# read -p "PATH: " EOS_PATH
+EOS_PATH=~/Github/eos
+
+printf "#!/bin/bash\n\n" > ~/.zeos/zeos.sh
+printf "export NODEOS_PATH="$NODEOS_PATH >> ~/.zeos/zeos.sh
+printf "export EOS_PATH="$EOS_PATH"\n\n" >> ~/.zeos/zeos.sh
+cat ./zeos.sh >> ~/.zeos/zeos.sh
+printf "\nScript copied.\n"
+printf "\nEOS_PATH="$EOS_PATH
+printf "\nNODEOS_PATH=$NODEOS_PATH\n\n"
+
+if [ ! -f ~/.bash_profile ]; then
+  printf "\nAdd the following to your shell profile:\n"
+  printf "source ~/.zeos/zeos.sh"
+  printf "\n"
+  return
+fi
+
+if cat ~/.bash_profile | grep zeos.sh; then
+  printf "\nZeos already installed."
+  printf "\n"
+  . ~/.bash_profile
+  return
+fi
+
+printf "source ~/.zeos/zeos.sh" >> ~/.bash_profile
+printf "\nZeos installation finished."
+printf "\n"
+. ~/.bash_profile
