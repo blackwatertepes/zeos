@@ -6,21 +6,22 @@
 
 `. setup`
 
-# QuickStart Guide
+# QuickStart Guide w/ Example
 
 ```
+PROJECT_NAME=hello
 eos_reset
 eos_setup
 eos_account_create $PROJECT_NAME
 eos_deploy $PROJECT_NAME
-cleos push action $PROJECT_NAME $METHOD $DATA -p $PROJECT_NAME
+cleos push action $PROJECT_NAME hi '["hello"]' -p $PROJECT_NAME
 ```
 
 # Command Reference
 
 ## Starting a nodeos process
 
-* `nodeos` The tradition way to start a EOS blockchain instance
+* `nodeos` The traditional way to start a EOS blockchain instance
 * `eos_clean` Deletes ALL existing blockchain data
 * `eos_reset` Deletes ALL existing blockchain data, and starts a nodeos instance
 
