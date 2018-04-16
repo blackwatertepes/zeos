@@ -1,3 +1,8 @@
+# Why use this?
+* **Quick Restart** - Restart the EOS blockchain from the genesis block, in 1 command
+* **Quick Deploy** - Build & Deploy your contract code in 1 command
+* **Auto Setup & Account Creation** - Create a default wallet, deploy the BIOS, and create an account, again, in 1 single command
+
 # Requirements
 * eos (nodeos & cleos)
 * MacOS
@@ -8,7 +13,9 @@
 
 # QuickStart Guide w/ Example
 
-`eos_reset`
+Start nodeos
+
+`nodeos`
 
 In another tab:
 ```
@@ -18,7 +25,37 @@ eos_deploy $PROJECT_NAME
 cleos push action $PROJECT_NAME hi '["hello"]' -p $PROJECT_NAME
 ```
 
-# Command Reference
+# Notable Features
+
+## Quick Restart
+
+`eos_reset`
+
+Most of the time, to start an EOS instance, it's best to simply use `nodeos`. But, sometimes, you want to start from scratch.
+In which case, this is the command for you.
+
+## Quick Deploy
+
+From within your projects parent directory...
+
+`eos_deploy $PROJECT_NAME`
+
+Normally, you'd have to...
+* `eosiocpp -o hello.wast hello.cpp` Build the .wast
+* `eosiocpp -g hello.abi hello.cpp` Build the .abi
+* `cleos set contract hello hello` Deploys the contract
+
+## Auto Setup & Account Creation
+
+`eos_account_create $PROJECT_NAME`
+
+What this does for you...
+* `cleos wallet create -n default` Creates a default wallet, if none already exists
+* Stores your wallet password
+* `cleos set contract eosio $EOS_PATH"/build/contracts/eosio.bios" -p eosio` Deploys the BIOS, if not already
+* `cleos create account eosio hello $KEY $KEY` Creates a contract account
+
+# Full Command Reference
 
 ## Starting a nodeos process
 
@@ -37,5 +74,5 @@ cleos push action $PROJECT_NAME hi '["hello"]' -p $PROJECT_NAME
 
 ## Building & Deploying your contract
 
-`eos_deploy $PROJECT_NAME` Builds and deploys your contract code (**Make sure you're in the parent dir of your project**)
-`eos_build` Builds your contract wast & ABI (**Make sure you're in the dir of your project**)
+* `eos_deploy $PROJECT_NAME` Builds and deploys your contract code (**Make sure you're in the parent dir of your project**)
+* `eos_build` Builds your contract wast & ABI (**Make sure you're in the dir of your project**)
