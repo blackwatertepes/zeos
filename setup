@@ -4,7 +4,7 @@ NODEOS_PATH=~/Library/Application\ Support/eosio/nodeos
 
 printf "Installing Zeos...\n"
 
-if [ ! -d "$NODEOS_PATH" ]; then
+if [ ! -d $NODEOS_PATH ]; then
   printf "\nERROR: nodeos not found"
   printf "\nInstall nodeos to continue"
   printf "\nGithub Repo: https://github.com/EOSIO/eos"
@@ -28,11 +28,11 @@ printf "\nExample: ~/Github/eos\n"
 EOS_PATH=~/Github/eos
 
 printf "#!/bin/bash\n\n" > ~/.zeos/zeos.sh
-printf "export NODEOS_PATH="$NODEOS_PATH"\n" >> ~/.zeos/zeos.sh
-printf "export EOS_PATH="$EOS_PATH"\n\n" >> ~/.zeos/zeos.sh
+echo "export NODEOS_PATH=\"$NODEOS_PATH\"" >> ~/.zeos/zeos.sh
+echo "export EOS_PATH=\"$EOS_PATH\"" >> ~/.zeos/zeos.sh
 cat ./zeos.sh >> ~/.zeos/zeos.sh
 printf "\nScript copied.\n"
-printf "\nEOS_PATH="$EOS_PATH
+printf "\nEOS_PATH=$EOS_PATH"
 printf "\nNODEOS_PATH=$NODEOS_PATH\n\n"
 
 if [ ! -f ~/.bash_profile ]; then

@@ -1,6 +1,6 @@
 eos_clean() {
-  rm $NODEOS_PATH"/config/genesis.json"
-  rm -rf $NODEOS_PATH"/data"
+  rm "$NODEOS_PATH/config/genesis.json"
+  rm -rf "$NODEOS_PATH/data"
   echo "" > ~/.zeos/keys.yml
 }
 
@@ -27,7 +27,7 @@ eos_wallet_create() {
 
 eos_setup() {
   eos_wallet_create
-  cleos set contract eosio $EOS_PATH"/build/contracts/eosio.bios" -p eosio
+  cleos set contract eosio "$EOS_PATH/build/contracts/eosio.bios" -p eosio
 }
 
 eos_account_create() {
