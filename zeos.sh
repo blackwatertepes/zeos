@@ -1,6 +1,6 @@
 eos_clean() {
-  rm $NODEOS_PATH/config/genesis.json
-  rm -rf $NODEOS_PATH/data
+  rm $NODEOS_PATH"/config/genesis.json"
+  rm -rf $NODEOS_PATH"/data"
   echo "" > ~/.zeos/keys.yml
 }
 
@@ -49,4 +49,8 @@ eos_deploy() {
   eos_build $1
   cd ..
   cleos set contract $1 $1
+}
+
+eos_keys() {
+  cat ~/.zeos/keys.yml
 }

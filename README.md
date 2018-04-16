@@ -1,7 +1,8 @@
 # Why use this?
-* **Quick Restart** - Restart the EOS blockchain from the genesis block, in 1 command
 * **Quick Deploy** - Build & Deploy your contract code in 1 command
-* **Auto Setup & Account Creation** - Create a default wallet, deploy the BIOS, and create an account, again, in 1 single command
+* **Wallet Password Storage** - Automatically stores the passwords for all the wallets you've created
+* **Auto Setup & Account Creation** - Create a default wallet, deploy the BIOS, & create an account in a single command
+* **Quick Restart** - Restart the EOS blockchain from the genesis block, again, in 1 command
 
 # Requirements
 * eos (nodeos & cleos)
@@ -27,13 +28,6 @@ cleos push action $PROJECT_NAME hi '["hello"]' -p $PROJECT_NAME
 
 # Notable Features
 
-## Quick Restart
-
-`eos_reset`
-
-Most of the time, to start an EOS instance, it's best to simply use `nodeos`. But, sometimes, you want to start from scratch.
-In which case, this is the command for you.
-
 ## Quick Deploy
 
 From within your projects parent directory...
@@ -45,15 +39,26 @@ Normally, you'd have to...
 * `eosiocpp -g hello.abi hello.cpp` Build the .abi
 * `cleos set contract hello hello` Deploys the contract
 
+## Wallet Password Storage
+
+`eos_keys` Print all your current passwords
+
 ## Auto Setup & Account Creation
 
 `eos_account_create $PROJECT_NAME`
 
 What this does for you...
 * `cleos wallet create -n default` Creates a default wallet, if none already exists
-* Stores your wallet password
+* Stores your wallet password (~/.zeos/keys.yml)
 * `cleos set contract eosio $EOS_PATH"/build/contracts/eosio.bios" -p eosio` Deploys the BIOS, if not already
 * `cleos create account eosio hello $KEY $KEY` Creates a contract account
+
+## Quick Restart
+
+`eos_reset`
+
+Most of the time, to start an EOS instance, it's best to simply use `nodeos`. But, sometimes, you want to start from scratch.
+In which case, this is the command for you.
 
 # Full Command Reference
 
@@ -76,3 +81,7 @@ What this does for you...
 
 * `eos_deploy $PROJECT_NAME` Builds and deploys your contract code (**Make sure you're in the parent dir of your project**)
 * `eos_build` Builds your contract wast & ABI (**Make sure you're in the dir of your project**)
+
+## Print your stored passwords
+
+* `eos_keys` Prints the entire password file (~/.zeos/keys.yml)
