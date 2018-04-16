@@ -4,14 +4,15 @@
 
 # Installation
 
-`. setup`
+`. setup && touch ~/.zeos/zeos.sh`
 
 # QuickStart Guide w/ Example
 
+`eos_reset`
+
+In another tab:
 ```
 PROJECT_NAME=hello
-eos_reset
-eos_setup
 eos_account_create $PROJECT_NAME
 eos_deploy $PROJECT_NAME
 cleos push action $PROJECT_NAME hi '["hello"]' -p $PROJECT_NAME

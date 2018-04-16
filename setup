@@ -28,7 +28,7 @@ printf "\nExample: ~/Github/eos\n"
 EOS_PATH=~/Github/eos
 
 printf "#!/bin/bash\n\n" > ~/.zeos/zeos.sh
-printf "export NODEOS_PATH="$NODEOS_PATH >> ~/.zeos/zeos.sh
+printf "export NODEOS_PATH="$NODEOS_PATH"\n" >> ~/.zeos/zeos.sh
 printf "export EOS_PATH="$EOS_PATH"\n\n" >> ~/.zeos/zeos.sh
 cat ./zeos.sh >> ~/.zeos/zeos.sh
 printf "\nScript copied.\n"
@@ -44,12 +44,12 @@ fi
 
 if cat ~/.bash_profile | grep zeos.sh; then
   printf "\nZeos already installed."
+  printf "\nDon't forget to run: touch ~/.bash_profile"
   printf "\n"
-  . ~/.bash_profile
   return
 fi
 
 printf "source ~/.zeos/zeos.sh" >> ~/.bash_profile
 printf "\nZeos installation finished."
+printf "\nDon't forget to run: touch ~/.bash_profile"
 printf "\n"
-. ~/.bash_profile

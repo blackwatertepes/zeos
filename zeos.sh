@@ -31,6 +31,10 @@ eos_setup() {
 }
 
 eos_account_create() {
+  if ! (cleos wallet keys | grep EOS); then
+    eos_setup
+  fi
+
   KEY=$(cleos wallet keys | grep EOS | cut -d '"' -f 2)
   cleos create account eosio $1 $KEY $KEY
 }
