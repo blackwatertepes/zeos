@@ -23,9 +23,8 @@ fi
 
 printf "\n\nSpecify the PATH to your eos directory"
 printf "\nExample: ~/Github/eos\n"
-# TODO: Prompt the user for the EOS_PATH...
-# read -p "PATH: " EOS_PATH
-EOS_PATH=~/Github/eos
+#EOS_PATH=~/Github/eos
+read -p "PATH: " EOS_PATH
 
 printf "#!/bin/bash\n\n" > ~/.zeos/zeos.sh
 echo "export NODEOS_PATH=\"$NODEOS_PATH\"" >> ~/.zeos/zeos.sh
