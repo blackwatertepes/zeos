@@ -19,12 +19,22 @@ func main() {
     },
   }
 
+  var cmdStart = &cobra.Command{
+    User:   "start",
+    Short:  "starts a # of nodeos block producers",
+    Run: func(cmd *cobra.Command, args []string) {
+      //nodeos
+      // TODO start multiple nodes in bg processes
+      fmt.Println("start")
+    },
+  }
+
   var cmdReset = &cobra.Command{
     Use:   "reset",
     Short: "deletes the blockchain data & starts nodeos",
     Run: func(cmd *cobra.Command, args []string) {
       //cmdClean.Execute()
-      //nodeos
+      //cmdStart.Execute()
       fmt.Println("reset")
     },
   }
@@ -34,26 +44,28 @@ func main() {
     Short: "creates the default wallet",
     Args: cobra.MinimumNArgs(0),
     Run: func(cmd *cobra.Command, args []string) {
+      // TODO use the standard eos wallet
       if (len(args) == 0) {
-        //eos_wallet_save "default" $(cleos wallet create | grep PW)
+        //kleos "default" $(cleos wallet create | grep PW)
         fmt.Println("wallet default created")
       } else {
-        //eos_wallet_save $1, $(cleos wallet create -n $1 | grep PW)
+        //kleos $1, $(cleos wallet create -n $1 | grep PW)
         fmt.Println("wallet", args[0], "created")
       }
     },
   }
 
-  var cmdSetup = &cobra.Command{
-    Use:   "setup",
+  var cmdBoot = &cobra.Command{
+    Use:   "boot",
     Short: "loads the BIOS",
     Run: func(cmd *cobra.Command, args []string) {
       //cmdWallet.Execute()
       //cleos set contract eosio "$EOS_PATH/build/contracts/eosio.bios" -p eosio
-      fmt.Println("setup")
+      fmt.Println("boot")
     },
   }
 
+  // TODO Add to projects as cmdProjectCreate
   var cmdAccount = &cobra.Command{
     Use:   "account",
     Short: "creates a contract account",
@@ -61,7 +73,7 @@ func main() {
     Run: func(cmd *cobra.Command, args []string) {
       /*
       if ! (cleos wallet keys | grep EOS); then
-        //cmdSetup.Execute()
+        //cmdBoot.Execute()
       fi
 
       KEY=$(cleos wallet keys | grep EOS | cut -d '"' -f 2)
@@ -71,6 +83,7 @@ func main() {
     },
   }
 
+  // TODO Add to projects as cmdProjectBuild
   var cmdBuild = &cobra.Command{
     Use:   "build",
     Short: "builds a contract (wast & abi)",
@@ -82,6 +95,7 @@ func main() {
     },
   }
 
+  // TODO add to projects as cmdProjectDeploy
   var cmdDeploy = &cobra.Command{
     Use:   "deploy",
     Short: "builds & deploys a contract",
@@ -97,7 +111,15 @@ func main() {
     },
   }
 
+  var cmdProject = &cobra.Command{
+    Use:   "project",
+    Run: func(cmd *cobra.Command, args []string) {
+      fmt.Println("project")
+    },
+  }
+
   var rootCmd = &cobra.Command{Use: "zeos"}
-  rootCmd.AddCommand(cmdClean, cmdReset, cmdWallet, cmdSetup, cmdAccount, cmdBuild, cmdDeploy)
+  rootCmd.AddCommand(cmdClean, cmdStart, cmdReset, cmdWallet, cmdBoot, cmdAccount, cmdBuild, cmdDeploy, cmdProject)
+  //cmdProject.AddCommand(cmdProjectCreate, cmdProjectList, cmdProjectDelete, cmdProjectClean, cmdProjectBuild, cmdProjectDeploy)
   rootCmd.Execute()
 }

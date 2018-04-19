@@ -22,15 +22,15 @@ printf "\nExample: ~/Github/eos\n"
 EOS_PATH=~/Github/eos
 #read -p "PATH: " EOS_PATH
 
-printf "#!/bin/bash\n\n" > ~/.zeos.sh
-echo "export NODEOS_PATH=\"$NODEOS_PATH\"" >> ~/.zeos.sh
-echo "export EOS_PATH=\"$EOS_PATH\"" >> ~/.zeos.sh
+printf "#!/bin/bash\n\n" > ~/.zeos/zeos.sh
+echo "export NODEOS_PATH=\"$NODEOS_PATH\"" >> ~/.zeos/zeos.sh
+echo "export EOS_PATH=\"$EOS_PATH\"" >> ~/.zeos/zeos.sh
 printf "\nEOS_PATH=$EOS_PATH"
 printf "\nNODEOS_PATH=$NODEOS_PATH\n\n"
 
 if [ ! -f ~/.bash_profile ]; then
   printf "\nAdd the following to your shell profile:\n"
-  printf "source ~/.zeos.sh"
+  printf "source ~/.zeos/zeos.sh"
   printf "\n"
   return
 fi
@@ -42,7 +42,7 @@ if cat ~/.bash_profile | grep zeos.sh; then
   return
 fi
 
-printf "source ~/.zeos.sh" >> ~/.bash_profile
+printf "source ~/.zeos/zeos.sh" >> ~/.bash_profile
 printf "\nZeos installation finished."
 printf "\nDon't forget to run: touch ~/.bash_profile"
 printf "\n"
