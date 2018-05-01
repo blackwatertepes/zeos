@@ -47,20 +47,29 @@ func main() {
     },
   }
 
+  var wallet = func(name string) {
+    // TODO use the standard eos wallet
+    //kleos $1, $(cleos wallet create -n $1 | grep PW)
+    fmt.Println("wallet", name, "created")
+  }
+
   var cmdWallet = &cobra.Command{
     Use:   "wallet",
     Short: "creates the default wallet",
     Args: cobra.MinimumNArgs(0),
     Run: func(cmd *cobra.Command, args []string) {
-      // TODO use the standard eos wallet
       if (len(args) == 0) {
-        //kleos "default" $(cleos wallet create | grep PW)
-        fmt.Println("wallet default created")
+        wallet("default")
       } else {
-        //kleos $1, $(cleos wallet create -n $1 | grep PW)
-        fmt.Println("wallet", args[0], "created")
+        wallet(args[0])
       }
     },
+  }
+
+  var boot = func() {
+    wallet("default")
+    exec.Command("cleos", "set", "contract", "eosio", os.Getenv("EOS_PATH") + "/build/contracts/eosio.bios", "-p", "eosio").Output()
+    fmt.Println("boot")
   }
 
   var cmdBoot = &cobra.Command{
@@ -68,10 +77,20 @@ func main() {
     Short: "loads the BIOS",
     // TODO Remove the boot command in v2? So we no longer require the EOS_PATH
     Run: func(cmd *cobra.Command, args []string) {
-      cmdWallet.Execute()
-      //exec.Command("cleos", "set", "contract", "eosio", "$EOS_PATH/build/contracts/eosio.bios" "-p", "eosio").Output()
-      fmt.Println("boot")
+      boot()
     },
+  }
+
+  var account = func(name string) {
+    /*
+    if ! (cleos wallet keys | grep EOS); then
+      //cmdBoot.Execute()
+    fi
+
+    KEY=$(cleos wallet keys | grep EOS | cut -d '"' -f 2)
+    cleos create account eosio $1 $KEY $KEY
+    */
+    fmt.Println("account", name, "created")
   }
 
   // TODO Add to projects as cmdProjectCreate
@@ -80,16 +99,14 @@ func main() {
     Short: "creates a contract account",
     Args: cobra.MinimumNArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
-      /*
-      if ! (cleos wallet keys | grep EOS); then
-        //cmdBoot.Execute()
-      fi
-
-      KEY=$(cleos wallet keys | grep EOS | cut -d '"' -f 2)
-      cleos create account eosio $1 $KEY $KEY
-      */
-      fmt.Println("account", args[0], "created")
+      account(args[0])
     },
+  }
+
+  var build = func(name string) {
+    exec.Command("eosiocpp", "-o", "${name}.wast", "${name}.cpp").Output()
+    exec.Command("eosiocpp", "-g", "${name}.abi", "${name}.cpp").Output()
+    fmt.Println("built", name)
   }
 
   // TODO Add to projects as cmdProjectBuild
@@ -98,10 +115,16 @@ func main() {
     Short: "builds a contract (wast & abi)",
     Args: cobra.MinimumNArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
-      exec.Command("eosiocpp", "-o", "${args[0]}.wast", "${args[0]}.cpp").Output()
-      exec.Command("eosiocpp", "-g", "${args[0]}.abi", "${args[0]}.cpp").Output()
-      fmt.Println("built", args[0])
+      build(args[0])
     },
+  }
+
+  var deploy = func(name string) {
+    exec.Command("cd", name).Output()
+    cmdBuild.Execute()
+    exec.Command("cd", "..").Output()
+    exec.Command("cleos", "set", "contract", name, name).Output()
+    fmt.Println("deployed", name)
   }
 
   // TODO add to projects as cmdProjectDeploy
@@ -110,12 +133,12 @@ func main() {
     Short: "builds & deploys a contract",
     Args: cobra.MinimumNArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
-      exec.Command("cd", args[0]).Output()
-      cmdBuild.Execute()
-      exec.Command("cd", "..").Output()
-      exec.Command("cleos", "set", "contract", args[0], args[0]).Output()
-      fmt.Println("deployed", args[0])
+      deploy(args[0])
     },
+  }
+
+  var project = func() {
+    fmt.Println("project")
   }
 
   // TODO Store a list of all the projects
@@ -123,7 +146,7 @@ func main() {
   var cmdProject = &cobra.Command{
     Use:   "project",
     Run: func(cmd *cobra.Command, args []string) {
-      fmt.Println("project")
+      project()
     },
   }
 
