@@ -2,30 +2,39 @@ package main
 
 import (
   "fmt"
-  //"strings"
+  "os"
+  "os/exec"
 
   "github.com/spf13/cobra"
 )
 
 func main() {
+  var clean = func() {
+    exec.Command("rm", os.Getenv("NODEOS_PATH") + "/config/genesis.json").Output()
+    exec.Command("rm", "-rf", os.Getenv("NODEOS_PATH") + "/data").Output()
+    fmt.Println("cleaned")
+  }
+
+  var start = func() {
+    // TODO start multiple nodes in bg processes
+    // TODO show nodeos output
+    exec.Command("nodeos").Output()
+    fmt.Println("started")
+  }
+
   var cmdClean = &cobra.Command{
     Use:   "clean",
     Short: "deletes the blockchain data",
-    //Long: `print is for printing anything back to the screen.`
     Run: func(cmd *cobra.Command, args []string) {
-      //rm "$NODEOS_PATH/config/genesis.json"
-      //rm -rf "$NODEOS_PATH/data"
-      fmt.Println("cleaned")
+      clean()
     },
   }
 
   var cmdStart = &cobra.Command{
-    User:   "start",
+    Use:   "start",
     Short:  "starts a # of nodeos block producers",
     Run: func(cmd *cobra.Command, args []string) {
-      //nodeos
-      // TODO start multiple nodes in bg processes
-      fmt.Println("start")
+      start()
     },
   }
 
@@ -33,9 +42,8 @@ func main() {
     Use:   "reset",
     Short: "deletes the blockchain data & starts nodeos",
     Run: func(cmd *cobra.Command, args []string) {
-      //cmdClean.Execute()
-      //cmdStart.Execute()
-      fmt.Println("reset")
+      clean()
+      start()
     },
   }
 
@@ -58,9 +66,10 @@ func main() {
   var cmdBoot = &cobra.Command{
     Use:   "boot",
     Short: "loads the BIOS",
+    // TODO Remove the boot command in v2? So we no longer require the EOS_PATH
     Run: func(cmd *cobra.Command, args []string) {
-      //cmdWallet.Execute()
-      //cleos set contract eosio "$EOS_PATH/build/contracts/eosio.bios" -p eosio
+      cmdWallet.Execute()
+      //exec.Command("cleos", "set", "contract", "eosio", "$EOS_PATH/build/contracts/eosio.bios" "-p", "eosio").Output()
       fmt.Println("boot")
     },
   }
@@ -89,8 +98,8 @@ func main() {
     Short: "builds a contract (wast & abi)",
     Args: cobra.MinimumNArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
-      //eosiocpp -o $1.wast $1.cpp
-      //eosiocpp -g $1.abi $1.cpp
+      exec.Command("eosiocpp", "-o", "${args[0]}.wast", "${args[0]}.cpp").Output()
+      exec.Command("eosiocpp", "-g", "${args[0]}.abi", "${args[0]}.cpp").Output()
       fmt.Println("built", args[0])
     },
   }
@@ -101,16 +110,16 @@ func main() {
     Short: "builds & deploys a contract",
     Args: cobra.MinimumNArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
-      /*
-      cd $1
-      //cmdBuild.Execute()
-      cd ..
-      cleos set contract $1 $1
-      */
+      exec.Command("cd", args[0]).Output()
+      cmdBuild.Execute()
+      exec.Command("cd", "..").Output()
+      exec.Command("cleos", "set", "contract", args[0], args[0]).Output()
       fmt.Println("deployed", args[0])
     },
   }
 
+  // TODO Store a list of all the projects
+  // TODO Store a list of all contracts & accounts for a given projects
   var cmdProject = &cobra.Command{
     Use:   "project",
     Run: func(cmd *cobra.Command, args []string) {
