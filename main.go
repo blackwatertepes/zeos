@@ -10,16 +10,17 @@ import (
 
 func main() {
   var clean = func() {
-    exec.Command("rm", os.Getenv("NODEOS_PATH") + "/config/genesis.json").Output()
-    exec.Command("rm", "-rf", os.Getenv("NODEOS_PATH") + "/data").Output()
+    exec.Command("rm", os.Getenv("NODEOS_PATH") + "/config/genesis.json").Run()
+    exec.Command("rm", "-rf", os.Getenv("NODEOS_PATH") + "/data").Run()
     fmt.Println("cleaned")
   }
 
   var start = func() {
     // TODO start multiple nodes in bg processes
-    // TODO show nodeos output
-    exec.Command("nodeos").Output()
-    fmt.Println("started")
+    cmd := exec.Command("nodeos")
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    cmd.Run()
   }
 
   var cmdClean = &cobra.Command{
