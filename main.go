@@ -4,23 +4,27 @@ import (
   "fmt"
   "os"
   "os/exec"
+  "strings"
 
   "github.com/spf13/cobra"
 )
 
 func main() {
+  var execCmdStream = func(cmd *exec.Cmd) {
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    cmd.Run()
+  }
+
   var clean = func() {
-    exec.Command("rm", os.Getenv("NODEOS_PATH") + "/config/genesis.json").Run()
-    exec.Command("rm", "-rf", os.Getenv("NODEOS_PATH") + "/data").Run()
+    execCmdStream(exec.Command("rm", os.Getenv("NODEOS_PATH") + "/config/genesis.json"))
+    execCmdStream(exec.Command("rm", "-rf", os.Getenv("NODEOS_PATH") + "/data"))
     fmt.Println("cleaned")
   }
 
   var start = func() {
     // TODO start multiple nodes in bg processes
-    cmd := exec.Command("nodeos")
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
-    cmd.Run()
+    execCmdStream(exec.Command("nodeos"))
   }
 
   var cmdClean = &cobra.Command{
@@ -50,7 +54,7 @@ func main() {
 
   var wallet = func(name string) {
     // TODO use the standard eos wallet
-    //kleos $1, $(cleos wallet create -n $1 | grep PW)
+    execCmdStream(exec.Command("kleos", name, "$(cleos wallet create -n " + name + " | grep PW)"))
     fmt.Println("wallet", name, "created")
   }
 
@@ -69,8 +73,8 @@ func main() {
 
   var boot = func() {
     wallet("default")
-    exec.Command("cleos", "set", "contract", "eosio", os.Getenv("EOS_PATH") + "/build/contracts/eosio.bios", "-p", "eosio").Output()
-    fmt.Println("boot")
+    execCmdStream(exec.Command("cleos", "set", "contract", "eosio", os.Getenv("EOS_PATH") + "/build/contracts/eosio.bios", "-p", "eosio"))
+    fmt.Println("booted")
   }
 
   var cmdBoot = &cobra.Command{
@@ -85,7 +89,7 @@ func main() {
   var account = func(name string) {
     /*
     if ! (cleos wallet keys | grep EOS); then
-      //cmdBoot.Execute()
+      boot()
     fi
 
     KEY=$(cleos wallet keys | grep EOS | cut -d '"' -f 2)
@@ -104,27 +108,38 @@ func main() {
     },
   }
 
-  var build = func(name string) {
-    exec.Command("eosiocpp", "-o", "${name}.wast", "${name}.cpp").Output()
-    exec.Command("eosiocpp", "-g", "${name}.abi", "${name}.cpp").Output()
-    fmt.Println("built", name)
+  var cwd = func() string {
+    out, err := exec.Command("pwd").Output()
+    if (err != nil) {
+      fmt.Println(err)
+    }
+    pwd := string(out)
+    dirs := strings.Split(pwd, "/")
+    return dirs[len(dirs) - 1]
+  }
+
+  var build = func() {
+    cwd := cwd()
+    execCmdStream(exec.Command("eosiocpp", "-o", cwd + ".wast", cwd + ".cpp"))
+    execCmdStream(exec.Command("eosiocpp", "-g", cwd + ".abi", cwd + ".cpp"))
+    fmt.Println("built", cwd)
   }
 
   // TODO Add to projects as cmdProjectBuild
   var cmdBuild = &cobra.Command{
     Use:   "build",
     Short: "builds a contract (wast & abi)",
-    Args: cobra.MinimumNArgs(1),
+    Args: cobra.MinimumNArgs(0),
     Run: func(cmd *cobra.Command, args []string) {
-      build(args[0])
+      build()
     },
   }
 
   var deploy = func(name string) {
-    exec.Command("cd", name).Output()
-    cmdBuild.Execute()
-    exec.Command("cd", "..").Output()
-    exec.Command("cleos", "set", "contract", name, name).Output()
+    exec.Command("cd", name).Run()
+    build()
+    exec.Command("cd", "..").Run()
+    execCmdStream(exec.Command("cleos", "set", "contract", name, name))
     fmt.Println("deployed", name)
   }
 
