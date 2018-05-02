@@ -53,8 +53,9 @@ func main() {
   }
 
   var wallet = func(name string) {
-    // TODO use the standard eos wallet
-    execCmdStream(exec.Command("kleos", name, "$(cleos wallet create -n " + name + " | grep PW)"))
+    // TODO Store the wallet password
+    // TODO Use the keosd wallet API?
+    execCmdStream(exec.Command("$(cleos wallet create -n " + name))
     fmt.Println("wallet", name, "created")
   }
 
@@ -90,11 +91,14 @@ func main() {
     /*
     if ! (cleos wallet keys | grep EOS); then
       boot()
-    fi
-
-    KEY=$(cleos wallet keys | grep EOS | cut -d '"' -f 2)
-    cleos create account eosio $1 $KEY $KEY
     */
+    key, err := exec.Command("cleos", "wallet", "keys").Output()
+    if (err != nil) {
+      fmt.Println(err)
+    }
+    fmt.Println(string(key))
+    // TODO grep out the EOS key
+    //execCmdStream(exec.Command("cleos", "create", "account", "eosio", name, string(key), string(key)))
     fmt.Println("account", name, "created")
   }
 
