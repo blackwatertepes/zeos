@@ -54,7 +54,6 @@ func main() {
 
   var wallet = func(name string) {
     // TODO Store the wallet password
-    // TODO Use the keosd wallet API?
     execCmdStream(exec.Command("$(cleos wallet create -n " + name))
     fmt.Println("wallet", name, "created")
   }
@@ -81,97 +80,13 @@ func main() {
   var cmdBoot = &cobra.Command{
     Use:   "boot",
     Short: "loads the BIOS",
-    // TODO Remove the boot command in v2? So we no longer require the EOS_PATH
+    // TODO Prompt for the EOS_PATH to be set, if it's not
     Run: func(cmd *cobra.Command, args []string) {
       boot()
-    },
-  }
-
-  var account = func(name string) {
-    /*
-    if ! (cleos wallet keys | grep EOS); then
-      boot()
-    */
-    key, err := exec.Command("cleos", "wallet", "keys").Output()
-    if (err != nil) {
-      fmt.Println(err)
-    }
-    fmt.Println(string(key))
-    // TODO grep out the EOS key
-    //execCmdStream(exec.Command("cleos", "create", "account", "eosio", name, string(key), string(key)))
-    fmt.Println("account", name, "created")
-  }
-
-  // TODO Add to projects as cmdProjectCreate
-  var cmdAccount = &cobra.Command{
-    Use:   "account",
-    Short: "creates a contract account",
-    Args: cobra.MinimumNArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-      account(args[0])
-    },
-  }
-
-  var cwd = func() string {
-    out, err := exec.Command("pwd").Output()
-    if (err != nil) {
-      fmt.Println(err)
-    }
-    pwd := string(out)
-    dirs := strings.Split(pwd, "/")
-    return dirs[len(dirs) - 1]
-  }
-
-  var build = func() {
-    cwd := cwd()
-    execCmdStream(exec.Command("eosiocpp", "-o", cwd + ".wast", cwd + ".cpp"))
-    execCmdStream(exec.Command("eosiocpp", "-g", cwd + ".abi", cwd + ".cpp"))
-    fmt.Println("built", cwd)
-  }
-
-  // TODO Add to projects as cmdProjectBuild
-  var cmdBuild = &cobra.Command{
-    Use:   "build",
-    Short: "builds a contract (wast & abi)",
-    Args: cobra.MinimumNArgs(0),
-    Run: func(cmd *cobra.Command, args []string) {
-      build()
-    },
-  }
-
-  var deploy = func(name string) {
-    exec.Command("cd", name).Run()
-    build()
-    exec.Command("cd", "..").Run()
-    execCmdStream(exec.Command("cleos", "set", "contract", name, name))
-    fmt.Println("deployed", name)
-  }
-
-  // TODO add to projects as cmdProjectDeploy
-  var cmdDeploy = &cobra.Command{
-    Use:   "deploy",
-    Short: "builds & deploys a contract",
-    Args: cobra.MinimumNArgs(1),
-    Run: func(cmd *cobra.Command, args []string) {
-      deploy(args[0])
-    },
-  }
-
-  var project = func() {
-    fmt.Println("project")
-  }
-
-  // TODO Store a list of all the projects
-  // TODO Store a list of all contracts & accounts for a given projects
-  var cmdProject = &cobra.Command{
-    Use:   "project",
-    Run: func(cmd *cobra.Command, args []string) {
-      project()
     },
   }
 
   var rootCmd = &cobra.Command{Use: "zeos"}
   rootCmd.AddCommand(cmdClean, cmdStart, cmdReset, cmdWallet, cmdBoot, cmdAccount, cmdBuild, cmdDeploy, cmdProject)
-  //cmdProject.AddCommand(cmdProjectCreate, cmdProjectList, cmdProjectDelete, cmdProjectClean, cmdProjectBuild, cmdProjectDeploy)
   rootCmd.Execute()
 }
